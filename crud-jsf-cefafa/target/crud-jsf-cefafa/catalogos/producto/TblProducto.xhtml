@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../Plantilla/plantilla.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <h:form id="frmProductos" acceptcharset="ISO-8859-1">
+            <p:growl autoUpdate="true" showDetail="true"/>
+
+            <p:dataTable id="tablaProductos" value="#{productoControl.lstProducto}" var="producto" filteredValue="#{productoControl.lstProductoFiltrada}"
+                         paginator="true" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="wTablaProductos">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <p:outputLabel value="Búsqueda " for="globalFilter"/>
+                        <p:inputText id="globalFilter" style="width: 500px" onkeyup="PF('wTablaProductos').filter()"/>
+                        <p:commandButton id="nuevo" action="frmProducto.xhtml?faces-redirect=true" icon="pi pi-plus" />
+                        <p:tooltip id="toolTipFade0" for="nuevo" value="Nuevo registro" />
+                    </p:outputPanel>
+                </f:facet>
+                <p:column headerText="Id Producto" filterBy="#{producto.id}">
+                    <p:outputLabel value="#{producto.id}"/>
+                </p:column>
+                <p:column headerText="Nombre" filterBy="#{producto.nombre}">
+                    <p:outputLabel value="#{producto.nombre}"/>
+                </p:column>
+                <p:column headerText="Descripcion" filterBy="#{producto.descripcion}">
+                    <p:outputLabel value="#{producto.descripcion}"/>
+                </p:column>
+                <p:column headerText="Producto" filterBy="#{producto.precio}">
+                    <p:outputLabel value="#{producto.precio}"/>
+                </p:column>
+                <p:column headerText="Acciones" width="20%">
+                    <p:panelGrid>
+                        <p:column>
+                            <p:commandButton id="editar" icon="pi pi-pencil" oncomplete="PF('wdlgProducto').show()" ajax="true" update="frmModificacion">
+                                <f:setPropertyActionListener target="#{productoControl.productoSeleccionado}" value="#{producto}"/>
+                            </p:commandButton>
+                            <p:tooltip id="toolTipFade1" for="editar" value="Editar registro" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton id="eliminar" icon="pi pi-trash" oncomplete="PF('confirmacion').show()">
+                                <f:setPropertyActionListener target="#{productoControl.productoSeleccionado}" value="#{producto}"/>
+                            </p:commandButton>
+                            <p:tooltip id="toolTipFade" for="eliminar" value="Eliminar" />
+                        </p:column>
+
+
+                    </p:panelGrid>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+
+        <p:confirmDialog message="¿Realmente desea eliminar el registro?" header="Mensaje de Confirmación" widgetVar="confirmacion">
+            <h:form>
+                <p:commandButton id="confirm" value="Si" oncomplete="PF('confirmacion').hide()" 
+                                 actionListener="#{productoControl.eliminarProducto()}" update=":frmProductos:tablaProductos"/>
+                <p:commandButton id="decline" value="No" onclick="PF('confirmacion').hide()" type="button"/>
+            </h:form>
+
+        </p:confirmDialog>
+
+        <p:dialog id="dlgProducto" widgetVar="wdlgProducto" header="Modificación de producto" >
+            <h:form id="frmModificacion" >
+                <p:panel header="Modificar">
+                    <p:panelGrid columns="3">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="nombre" value="Nombre"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="nombre" value="#{productoControl.productoSeleccionado.nombre}"/>
+                            </p:column>
+                        </p:row> 
+                         <p:row>
+                            <p:column>
+                                <p:outputLabel for="descripcion" value="Descripcion"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="descripcion" value="#{productoControl.productoSeleccionado.descripcion}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel for="precio" value="Precio"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="precio" value="#{productoControl.productoSeleccionado.precio}"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column >
+                                <p:commandButton value="Actualizar" oncomplete="PF('wdlfProducto')hide()" action="#{productoControl.modificarProducto()}" update=":frmProductos:tablaProductos"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+        </p:dialog>       
+    </ui:define>
+
+</ui:composition>
